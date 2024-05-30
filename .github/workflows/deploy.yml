@@ -6,22 +6,14 @@ on:
       - main
 
 jobs:
-  deploy:
+  DEPLOY_TO_PRODUCTION:
     runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Install SSH client
-      run: sudo apt-get install -y ssh
-
-    - name: Deploy to Production Server
-      uses: easingthemes/ssh-deploy@v2.1.5
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        ARGS: "-avz --delete"
-        SOURCE: "path/to/build/"
-        REMOTE_HOST: ${{ secrets.SSH_HOST }}
-        REMOTE_USER: ${{ secrets.SSH_USERNAME }}
-        TARGET: "/path/to/remote/directory"
+    name: Subir a produccion
+    run: |
+      echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/prod_key.pem
+      chmod 600 ~/prod_key.pem
+      cd ${{ github.workspace }}
+      echo "Desplegando..." > ./web/last_deploy.txt
+      date >> ./web/last_deploy.txt
+      scp -r -o stricthostkeychecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" ./index.html ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/home/a16margarlop/web/a16margarlop.daw.inspedralbes.cat/public_html/actions
