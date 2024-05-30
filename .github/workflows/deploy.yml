@@ -17,6 +17,4 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/prod_key.pem
           chmod 600 ~/prod_key.pem
           cd ${{ github.workspace }}
-          echo "Desplegando..." > ./web/last_deploy.txt
-          date >> ./web/last_deploy.txt
           scp -r -o stricthostkeychecking=no -o UserKnownHostsFile=/dev/null -i "~/prod_key.pem" ./index.html ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/home/a16margarlop/web/a16margarlop.daw.inspedralbes.cat/public_html/actions
